@@ -1,0 +1,24 @@
+{{ range $host, $containers := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
+{{ $host }} {
+  {{ range $index, $value := $containers }}
+    {{ $addrLen := len $value.Addresses }}
+    {{ if eq $addrLen 1 }}
+      {{ with $address := index $value.Addresses 0 }}
+      proxy / {{ $address.IP }}:{{ $address.Port }}
+      {{ end }}
+    {{ else if $value.Env.VIRTUAL_PORT }}
+      {{ range $i, $address := $value.Addresses }}
+        {{ if eq $address.Port $value.Env.VIRTUAL_PORT }}
+        proxy / {{ $address.IP }}:{{ $address.Port }}
+        {{ end }}
+      {{ end }}
+    {{ else }}
+      {{ range $i, $address := $value.Addresses }}
+        {{ if eq $address.Port "80" }}
+        proxy / {{ $address.IP }}:{{ $address.Port }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+}
+{{ end }}
