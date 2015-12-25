@@ -31,4 +31,4 @@ ENV DOCKER_HOST unix:///tmp/docker.sock
 
 RUN chmod +x /app/docker-entrypoint.sh
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+ENTRYPOINT ["/app/docker-entrypoint.sh", "caddy", "--conf", "/etc/Caddyfile"]
